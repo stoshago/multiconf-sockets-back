@@ -1,6 +1,6 @@
 package ua.nix.multiconfback.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ua.nix.multiconfback.api.model.DetailedListDto;
-import ua.nix.multiconfback.api.model.TodoItemDto;
-import ua.nix.multiconfback.api.model.TodoListDto;
 import ua.nix.multiconfback.api.request.CreateTodoItemRequest;
 import ua.nix.multiconfback.api.request.CreateTodoListRequest;
 import ua.nix.multiconfback.api.response.AvailableListsResponse;
@@ -21,6 +19,7 @@ import ua.nix.multiconfback.exceptions.PermissionDeniedException;
 import ua.nix.multiconfback.model.TodoItem;
 import ua.nix.multiconfback.model.TodoList;
 import ua.nix.multiconfback.service.AuthService;
+import ua.nix.multiconfback.service.NotificationService;
 import ua.nix.multiconfback.service.TodoItemService;
 import ua.nix.multiconfback.service.TodoListService;
 import ua.nix.multiconfback.util.DtoConverter;
@@ -28,22 +27,14 @@ import ua.nix.multiconfback.util.DtoConverter;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/todo/")
 public class TodoController {
 
     private final TodoListService todoListService;
     private final TodoItemService todoItemService;
     private final AuthService authService;
-
-    @Autowired
-    public TodoController(
-            TodoListService todoListService,
-            TodoItemService todoItemService,
-            AuthService authService) {
-        this.todoListService = todoListService;
-        this.todoItemService = todoItemService;
-        this.authService = authService;
-    }
+    private final NotificationService notificationService;
 
     @GetMapping("/list/all")
     public AvailableListsResponse getAllLists() {
@@ -56,13 +47,14 @@ public class TodoController {
     }
 
     @PostMapping("/list")
-    public TodoListDto createList(@RequestBody CreateTodoListRequest request) {
+    public void createList(@RequestBody CreateTodoListRequest request) {
         TodoList list = new TodoList();
         list.setTitle(request.getTitle());
         list.setIcon(request.getIcon());
         list.setPublic(request.isPublic());
         list = todoListService.save(list);
-        return DtoConverter.convertTodoList(list);
+
+        notificationService.notifyListAdded(DtoConverter.convertTodoList(list), list.isPublic());
     }
 
     @GetMapping("/list/{listId}")
@@ -77,10 +69,12 @@ public class TodoController {
     public void deleteList(@PathVariable String listId) {
         TodoList list = findListSecured(listId);
         todoListService.delete(list);
+
+        notificationService.notifyListDeleted(listId, list.isPublic());
     }
 
     @PostMapping("/list/{listId}")
-    public TodoItemDto createListItem(
+    public void createListItem(
             @PathVariable String listId,
             @RequestBody CreateTodoItemRequest request
     ) {
@@ -92,7 +86,7 @@ public class TodoController {
         item.setList(list);
         item = todoItemService.save(item);
 
-        return DtoConverter.convertTodoItem(item);
+        notificationService.notifyListItemAdded(DtoConverter.convertTodoItem(item), list.isPublic());
     }
 
     @PutMapping("/item/{itemId}/complete/{isCompleted}")
@@ -104,13 +98,20 @@ public class TodoController {
         TodoItem item = findItemSecured(itemId);
         item.setCompleted(isCompleted);
         todoItemService.save(item);
+
+        notificationService.notifyListItemCompleted(item.getId(), item.isCompleted(), item.getList().isPublic());
     }
 
     @DeleteMapping("/item/{itemId}")
     @Transactional
     public void deleteItem(@PathVariable String itemId) {
         TodoItem item = findItemSecured(itemId);
+        TodoList list = item.getList();
+
+        list.getItems().remove(item);
         todoItemService.delete(item);
+
+        notificationService.notifyListItemDeleted(list.getId(), item.getId(), list.isPublic());
     }
 
     private TodoItem findItemSecured(String itemId) {
