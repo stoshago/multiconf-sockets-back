@@ -13,6 +13,7 @@ public interface Constants {
     String ITEM_DELETED_TOPIC = "item-deleted";
     String LIST_ADDED_TOPIC = "list-added";
     String LIST_DELETED_TOPIC = "list-deleted";
+    String PRIVATE_LISTS_UPDATED_TOPIC = "private-lists-update";
 
     String AMQ_TOPIC_PREFIX = "activeMqComponent:topic:";
     String RECIPIENT_HEADER = "recipient-username";

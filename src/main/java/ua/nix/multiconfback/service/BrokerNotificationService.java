@@ -8,6 +8,7 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.ExchangeBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import ua.nix.multiconfback.api.model.DetailedListDto;
 import ua.nix.multiconfback.api.model.TodoItemDto;
 import ua.nix.multiconfback.api.model.TodoListDto;
 import ua.nix.multiconfback.sockets.messages.ItemCompletedBody;
@@ -15,12 +16,15 @@ import ua.nix.multiconfback.sockets.messages.ItemDeletedBody;
 import ua.nix.multiconfback.sockets.messages.ListDeletedBody;
 import ua.nix.multiconfback.sockets.messages.WsMessage;
 
+import java.util.List;
+
 import static ua.nix.multiconfback.util.Constants.AMQ_TOPIC_PREFIX;
 import static ua.nix.multiconfback.util.Constants.ITEM_ADDED_TOPIC;
 import static ua.nix.multiconfback.util.Constants.ITEM_COMPLETED_TOPIC;
 import static ua.nix.multiconfback.util.Constants.ITEM_DELETED_TOPIC;
 import static ua.nix.multiconfback.util.Constants.LIST_ADDED_TOPIC;
 import static ua.nix.multiconfback.util.Constants.LIST_DELETED_TOPIC;
+import static ua.nix.multiconfback.util.Constants.PRIVATE_LISTS_UPDATED_TOPIC;
 import static ua.nix.multiconfback.util.Constants.RECIPIENT_HEADER;
 
 @Slf4j
@@ -106,6 +110,14 @@ public class BrokerNotificationService {
                 .data(list)
                 .build();
         notify(message, notifyAll);
+    }
+
+    public void notifyPrivateListsUpdated(List<DetailedListDto> newLists) {
+        WsMessage message = WsMessage.builder()
+                .topic(PRIVATE_LISTS_UPDATED_TOPIC)
+                .data(newLists)
+                .build();
+        notifyCurrentUser(message);
     }
 
 

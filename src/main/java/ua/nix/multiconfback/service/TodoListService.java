@@ -15,4 +15,6 @@ public interface TodoListService extends CrudRepository<TodoList, String> {
     List<TodoList> findAllByIsPublicTrueOrderByCreatedDate();
     List<TodoList> findAllByCreatedByAndIsPublicFalseOrderByCreatedDate(User createdBy);
 
+    void deleteAllByCreatedByAndIsPublicFalse(User user);
+
 }

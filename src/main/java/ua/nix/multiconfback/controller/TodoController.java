@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ua.nix.multiconfback.api.model.DetailedListDto;
+import ua.nix.multiconfback.api.model.RewriteTodoList;
 import ua.nix.multiconfback.api.request.CreateTodoItemRequest;
 import ua.nix.multiconfback.api.request.CreateTodoListRequest;
 import ua.nix.multiconfback.api.response.AvailableListsResponse;
@@ -18,14 +19,15 @@ import ua.nix.multiconfback.exceptions.DataNotFoundException;
 import ua.nix.multiconfback.exceptions.PermissionDeniedException;
 import ua.nix.multiconfback.model.TodoItem;
 import ua.nix.multiconfback.model.TodoList;
+import ua.nix.multiconfback.model.User;
 import ua.nix.multiconfback.service.AuthService;
 import ua.nix.multiconfback.service.BrokerNotificationService;
-import ua.nix.multiconfback.service.NotificationService;
 import ua.nix.multiconfback.service.TodoItemService;
 import ua.nix.multiconfback.service.TodoListService;
 import ua.nix.multiconfback.util.DtoConverter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -113,6 +115,38 @@ public class TodoController {
         todoItemService.delete(item);
 
         notificationService.notifyListItemDeleted(list.getId(), item.getId(), list.isPublic());
+    }
+
+    @PostMapping("/list/rewriteMyLists")
+    public List<DetailedListDto> rewriteAllPrivateLists(@RequestBody List<RewriteTodoList> listsRequest) {
+        // clear all lists
+        User currentUser = authService.getCurrentUser();
+        todoListService.deleteAllByCreatedByAndIsPublicFalse(currentUser);
+
+        // create new lists
+        List<TodoList> newLists = listsRequest.stream().map(listReq -> {
+            TodoList newList = new TodoList();
+            newList.setTitle(listReq.getTitle());
+            newList.setIcon(listReq.getIcon());
+            newList.setPublic(false);
+            newList.setItems(listReq.getItems().stream().map(itemReq -> {
+                TodoItem newItem = new TodoItem();
+                newItem.setTitle(itemReq.getTitle());
+                newItem.setDetails(itemReq.getDetails());
+                newItem.setCompleted(itemReq.isCompleted());
+                newItem.setList(newList);
+                return newItem;
+            }).collect(Collectors.toList()));
+            return newList;
+        }).collect(Collectors.toList());
+
+        // save new lists
+        todoListService.saveAll(newLists);
+        List<DetailedListDto> response = DtoConverter.convertDetailedTodoLists(newLists);
+
+        notificationService.notifyPrivateListsUpdated(response);
+
+        return response;
     }
 
     private TodoItem findItemSecured(String itemId) {
