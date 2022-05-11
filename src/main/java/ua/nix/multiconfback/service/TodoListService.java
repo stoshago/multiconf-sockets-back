@@ -12,7 +12,7 @@ import java.util.List;
 @Transactional
 public interface TodoListService extends CrudRepository<TodoList, String> {
 
-    List<TodoList> findAllByPublicTrueOrderByCreatedDate();
-    List<TodoList> findAllByCreatedByAndPublicFalseOrderByCreatedDate(User createdBy);
+    List<TodoList> findAllByIsPublicTrueOrderByCreatedDate();
+    List<TodoList> findAllByCreatedByAndIsPublicFalseOrderByCreatedDate(User createdBy);
 
 }

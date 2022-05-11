@@ -47,8 +47,8 @@ public class TodoController {
 
     @GetMapping("/list/all")
     public AvailableListsResponse getAllLists() {
-        List<TodoList> privateLists = todoListService.findAllByCreatedByAndPublicFalseOrderByCreatedDate(authService.getCurrentUser());
-        List<TodoList> publicLists = todoListService.findAllByPublicTrueOrderByCreatedDate();
+        List<TodoList> privateLists = todoListService.findAllByCreatedByAndIsPublicFalseOrderByCreatedDate(authService.getCurrentUser());
+        List<TodoList> publicLists = todoListService.findAllByIsPublicTrueOrderByCreatedDate();
         return new AvailableListsResponse(
                 DtoConverter.convertTodoLists(privateLists),
                 DtoConverter.convertTodoLists(publicLists)
