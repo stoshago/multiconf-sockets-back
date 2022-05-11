@@ -14,11 +14,13 @@ public class SocketCamelRoute extends RouteBuilder {
     @Value("${amq.broker.topic}")
     private String topic;
 
+    private final BrokerMessageProcessor messageProcessor;
+
     @Override
     public void configure() {
         from("activemq:topic:" + topic)
-                .log(">>> Read message: ${body}");
-
+                .log(">>> Read message: ${body}")
+                .process(messageProcessor);
     }
 
 }
