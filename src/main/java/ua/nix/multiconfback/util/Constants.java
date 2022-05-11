@@ -17,5 +17,6 @@ public interface Constants {
 
     String AMQ_TOPIC_PREFIX = "activeMqComponent:topic:";
     String RECIPIENT_HEADER = "recipient-username";
+    String PROCESSOR_HEADER = "processor-name";
 
 }

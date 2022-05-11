@@ -144,7 +144,7 @@ public class TodoController {
         todoListService.saveAll(newLists);
         List<DetailedListDto> response = DtoConverter.convertDetailedTodoLists(newLists);
 
-        notificationService.notifyPrivateListsUpdated(response);
+        notificationService.notifyPrivateListsUpdated();
 
         return response;
     }
