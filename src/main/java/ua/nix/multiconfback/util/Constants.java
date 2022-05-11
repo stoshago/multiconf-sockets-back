@@ -14,4 +14,7 @@ public interface Constants {
     String LIST_ADDED_TOPIC = "list-added";
     String LIST_DELETED_TOPIC = "list-deleted";
 
+    String AMQ_TOPIC_PREFIX = "activeMqComponent:topic:";
+    String RECIPIENT_HEADER = "recipient-username";
+
 }
