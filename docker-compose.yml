@@ -9,3 +9,15 @@ services:
       - MYSQL_DATABASE=multiconf_db
       - MYSQL_USER=multiconf
       - MYSQL_PASSWORD=hey-here-is-my-secret-mysql-password#qwerty^^^
+  activemq:
+    image: webcenter/activemq
+    ports:
+      # ui
+      - "8161:8161"
+      # jms
+      - "61616:61616"
+    environment:
+      ACTIVEMQ_ADMIN_LOGIN: admin
+      ACTIVEMQ_ADMIN_PASSWORD: admin
+      ACTIVEMQ_JMX_LOGIN: multiconf
+      ACTIVEMQ_JMX_PASSWORD: hey-here-is-my-secret-activemq-password#qwerty^^^
