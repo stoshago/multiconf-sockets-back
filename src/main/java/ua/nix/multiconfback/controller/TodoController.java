@@ -19,6 +19,7 @@ import ua.nix.multiconfback.exceptions.PermissionDeniedException;
 import ua.nix.multiconfback.model.TodoItem;
 import ua.nix.multiconfback.model.TodoList;
 import ua.nix.multiconfback.service.AuthService;
+import ua.nix.multiconfback.service.BrokerNotificationService;
 import ua.nix.multiconfback.service.NotificationService;
 import ua.nix.multiconfback.service.TodoItemService;
 import ua.nix.multiconfback.service.TodoListService;
@@ -34,7 +35,7 @@ public class TodoController {
     private final TodoListService todoListService;
     private final TodoItemService todoItemService;
     private final AuthService authService;
-    private final NotificationService notificationService;
+    private final BrokerNotificationService notificationService;
 
     @GetMapping("/list/all")
     public AvailableListsResponse getAllLists() {
