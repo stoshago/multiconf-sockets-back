@@ -29,4 +29,9 @@ public class SocketSessionStorage {
     public Map<String, List<WebSocketSession>> getSessionMap() {
         return sessionMap;
     }
+
+    public List<WebSocketSession> getUserSessions(String username) {
+        return sessionMap.get(username);
+    }
+
 }
