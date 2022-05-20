@@ -24,11 +24,12 @@ public class PullPrivateListsProcessor implements Processor {
     private final TodoListService todoListService;
     private final UserDetailsService userService;
     private final DtoMapper dtoMapper;
+    private final Gson gson;
 
     @Override
     public void process(Exchange exchange) {
         Object body = returnData(exchange);
-        exchange.getIn().setBody(new Gson().toJson(body));
+        exchange.getIn().setBody(gson.toJson(body));
     }
 
     protected WsMessage returnData(Exchange exchange) {
@@ -44,6 +45,6 @@ public class PullPrivateListsProcessor implements Processor {
     }
 
     private String getUsername(Exchange exchange) {
-        return (String) new Gson().fromJson(exchange.getIn().getBody(String.class), Map.class).get("username");
+        return (String) gson.fromJson(exchange.getIn().getBody(String.class), Map.class).get("username");
     }
 }

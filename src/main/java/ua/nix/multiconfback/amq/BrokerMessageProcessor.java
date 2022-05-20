@@ -15,6 +15,7 @@ import static ua.nix.multiconfback.util.Constants.RECIPIENT_HEADER;
 public class BrokerMessageProcessor implements Processor {
 
     private final NotificationService notificationService;
+    private final Gson gson;
 
     @Override
     public void process(Exchange exchange) {
@@ -29,7 +30,7 @@ public class BrokerMessageProcessor implements Processor {
 
     private WsMessage parseMessage(Exchange exchange) {
         String jsonBody = exchange.getIn().getBody(String.class);
-        return new Gson().fromJson(jsonBody, WsMessage.class);
+        return gson.fromJson(jsonBody, WsMessage.class);
     }
 
     private Object getHeader(Exchange exchange, String headerName) {

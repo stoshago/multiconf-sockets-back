@@ -1,5 +1,6 @@
 package ua.nix.multiconfback.configuration;
 
+import com.google.gson.Gson;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -89,6 +90,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter(jwtService, userDetailsService);
+    }
+
+    @Bean
+    public Gson gson() {
+        return new Gson();
     }
 
 }

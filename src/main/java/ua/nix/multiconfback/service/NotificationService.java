@@ -16,11 +16,12 @@ import java.io.IOException;
 public class NotificationService {
 
     private final SocketSessionStorage sessionStorage;
+    private final Gson gson;
 
     public void notifyAll(WsMessage message) {
         sessionStorage.getSessionMap().forEach((key, value) -> value.forEach((session) -> {
             try {
-                session.sendMessage(new TextMessage(new Gson().toJson(message)));
+                session.sendMessage(new TextMessage(gson.toJson(message)));
             } catch (IOException e) {
                 log.error("Error occurred during message sending over WebSockets", e);
             }
@@ -30,7 +31,7 @@ public class NotificationService {
     public void notifyUser(String username, WsMessage message) {
         sessionStorage.getUserSessions(username).forEach((session) -> {
             try {
-                session.sendMessage(new TextMessage(new Gson().toJson(message)));
+                session.sendMessage(new TextMessage(gson.toJson(message)));
             } catch (IOException e) {
                 log.error("Error occurred during message sending over WebSockets", e);
             }
