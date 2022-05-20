@@ -11,6 +11,7 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -33,4 +34,16 @@ public abstract class AbstractIdModel {
     @Column(name = "id", updatable = false, nullable = false)
     private String id;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AbstractIdModel)) return false;
+        AbstractIdModel that = (AbstractIdModel) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
