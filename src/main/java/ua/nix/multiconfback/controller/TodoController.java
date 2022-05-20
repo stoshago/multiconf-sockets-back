@@ -22,8 +22,8 @@ import ua.nix.multiconfback.model.TodoList;
 import ua.nix.multiconfback.model.User;
 import ua.nix.multiconfback.service.AuthService;
 import ua.nix.multiconfback.service.BrokerNotificationService;
-import ua.nix.multiconfback.service.TodoItemService;
-import ua.nix.multiconfback.service.TodoListService;
+import ua.nix.multiconfback.repository.TodoItemRepository;
+import ua.nix.multiconfback.repository.TodoListRepository;
 import ua.nix.multiconfback.util.DtoMapper;
 
 import java.util.List;
@@ -34,16 +34,16 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/todo/")
 public class TodoController {
 
-    private final TodoListService todoListService;
-    private final TodoItemService todoItemService;
+    private final TodoListRepository todoListRepository;
+    private final TodoItemRepository todoItemRepository;
     private final AuthService authService;
     private final BrokerNotificationService notificationService;
     private final DtoMapper dtoMapper;
 
     @GetMapping("/list/all")
     public AvailableListsResponse getAllLists() {
-        List<TodoList> privateLists = todoListService.findAllByCreatedByAndIsPublicFalseOrderByCreatedDate(authService.getCurrentUser());
-        List<TodoList> publicLists = todoListService.findAllByIsPublicTrueOrderByCreatedDate();
+        List<TodoList> privateLists = todoListRepository.findAllByCreatedByAndIsPublicFalseOrderByCreatedDate(authService.getCurrentUser());
+        List<TodoList> publicLists = todoListRepository.findAllByIsPublicTrueOrderByCreatedDate();
         return new AvailableListsResponse(
                 dtoMapper.convertTodoLists(privateLists),
                 dtoMapper.convertTodoLists(publicLists)
@@ -56,7 +56,7 @@ public class TodoController {
         list.setTitle(request.getTitle());
         list.setIcon(request.getIcon());
         list.setPublic(request.isPublic());
-        list = todoListService.save(list);
+        list = todoListRepository.save(list);
 
         notificationService.notifyListAdded(dtoMapper.convertTodoList(list), list.isPublic());
     }
@@ -72,7 +72,7 @@ public class TodoController {
     @Transactional
     public void deleteList(@PathVariable String listId) {
         TodoList list = findListSecured(listId);
-        todoListService.delete(list);
+        todoListRepository.delete(list);
 
         notificationService.notifyListDeleted(listId, list.isPublic());
     }
@@ -86,7 +86,7 @@ public class TodoController {
 
         TodoItem item = dtoMapper.parseTodoItem(request);
         item.setList(list);
-        item = todoItemService.save(item);
+        item = todoItemRepository.save(item);
 
         notificationService.notifyListItemAdded(dtoMapper.convertTodoItem(item), list.isPublic());
     }
@@ -99,7 +99,7 @@ public class TodoController {
     ) {
         TodoItem item = findItemSecured(itemId);
         item.setCompleted(isCompleted);
-        todoItemService.save(item);
+        todoItemRepository.save(item);
 
         notificationService.notifyListItemCompleted(item.getId(), item.isCompleted(), item.getList().isPublic());
     }
@@ -111,7 +111,7 @@ public class TodoController {
         TodoList list = item.getList();
 
         list.getItems().remove(item);
-        todoItemService.delete(item);
+        todoItemRepository.delete(item);
 
         notificationService.notifyListItemDeleted(list.getId(), item.getId(), list.isPublic());
     }
@@ -120,7 +120,7 @@ public class TodoController {
     public List<DetailedListDto> rewriteAllPrivateLists(@RequestBody List<RewriteTodoList> listsRequest) {
         // clear all lists
         User currentUser = authService.getCurrentUser();
-        todoListService.deleteAllByCreatedByAndIsPublicFalse(currentUser);
+        todoListRepository.deleteAllByCreatedByAndIsPublicFalse(currentUser);
 
         // create new lists
         List<TodoList> newLists = listsRequest.stream().map(listReq -> {
@@ -140,7 +140,7 @@ public class TodoController {
         }).collect(Collectors.toList());
 
         // save new lists
-        todoListService.saveAll(newLists);
+        todoListRepository.saveAll(newLists);
         List<DetailedListDto> response = dtoMapper.convertDetailedTodoLists(newLists);
 
         notificationService.notifyPrivateListsUpdated();
@@ -150,7 +150,7 @@ public class TodoController {
 
     private TodoItem findItemSecured(String itemId) {
         String currentUserId = authService.getCurrentUser().getId();
-        TodoItem item = todoItemService.findById(itemId)
+        TodoItem item = todoItemRepository.findById(itemId)
                 .orElseThrow(() -> new DataNotFoundException(
                         String.format("Item [id:%s] was not found", itemId)
                 ));
@@ -171,7 +171,7 @@ public class TodoController {
     }
 
     private TodoList findList(String listId) {
-        return todoListService.findById(listId)
+        return todoListRepository.findById(listId)
                 .orElseThrow(() -> new DataNotFoundException(
                         String.format("List [id:%s] was not found", listId)
                 ));

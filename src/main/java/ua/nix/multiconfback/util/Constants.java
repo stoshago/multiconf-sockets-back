@@ -1,22 +1,25 @@
 package ua.nix.multiconfback.util;
 
-public interface Constants {
+import lombok.experimental.UtilityClass;
 
-    String TOKEN_HEADER_SUFFIX = "Bearer ";
-    String AUTH_HEADER = "Authorization";
+@UtilityClass
+public class Constants {
 
-    String AUTH_ATTRIBUTE = "auth";
+    public static final String TOKEN_HEADER_SUFFIX = "Bearer ";
+    public static final String AUTH_HEADER = "Authorization";
+
+    public static final String AUTH_ATTRIBUTE = "auth";
 
     // TOPICS
-    String ITEM_COMPLETED_TOPIC = "item-completed";
-    String ITEM_ADDED_TOPIC = "item-added";
-    String ITEM_DELETED_TOPIC = "item-deleted";
-    String LIST_ADDED_TOPIC = "list-added";
-    String LIST_DELETED_TOPIC = "list-deleted";
-    String PRIVATE_LISTS_UPDATED_TOPIC = "private-lists-update";
+    public static final String ITEM_COMPLETED_TOPIC = "item-completed";
+    public static final String ITEM_ADDED_TOPIC = "item-added";
+    public static final String ITEM_DELETED_TOPIC = "item-deleted";
+    public static final String LIST_ADDED_TOPIC = "list-added";
+    public static final String LIST_DELETED_TOPIC = "list-deleted";
+    public static final String PRIVATE_LISTS_UPDATED_TOPIC = "private-lists-update";
 
-    String AMQ_TOPIC_PREFIX = "activeMqComponent:topic:";
-    String RECIPIENT_HEADER = "recipient-username";
-    String PROCESSOR_HEADER = "processor-name";
+    public static final String AMQ_TOPIC_PREFIX = "activeMqComponent:topic:";
+    public static final String RECIPIENT_HEADER = "recipient-username";
+    public static final String PROCESSOR_HEADER = "processor-name";
 
 }

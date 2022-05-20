@@ -17,7 +17,7 @@ import ua.nix.multiconfback.api.response.MessageResponse;
 import ua.nix.multiconfback.api.response.TokenResponse;
 import ua.nix.multiconfback.model.User;
 import ua.nix.multiconfback.security.JwtService;
-import ua.nix.multiconfback.service.UserService;
+import ua.nix.multiconfback.repository.UserRepository;
 import ua.nix.multiconfback.util.DtoMapper;
 
 @RestController
@@ -26,7 +26,7 @@ import ua.nix.multiconfback.util.DtoMapper;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final UserService userService;
+    private final UserRepository userRepository;
     private final PasswordEncoder encoder;
     private final JwtService jwtService;
     private final DtoMapper dtoMapper;
@@ -44,14 +44,14 @@ public class AuthController {
 
     @PostMapping("/sign-up")
     public ResponseEntity<?> signUp(@RequestBody SignupRequest request) {
-        if (userService.existsByLogin(request.getUsername())) {
+        if (userRepository.existsByLogin(request.getUsername())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Username is already taken!"));
         }
 
         User user = dtoMapper.parseUser(request);
-        userService.save(user);
+        userRepository.save(user);
 
         Authentication authUser = authorize(request.getUsername(), request.getPassword());
         return ResponseEntity.ok(

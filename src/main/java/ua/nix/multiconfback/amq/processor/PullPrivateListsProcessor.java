@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import ua.nix.multiconfback.model.TodoList;
 import ua.nix.multiconfback.model.User;
-import ua.nix.multiconfback.service.TodoListService;
+import ua.nix.multiconfback.repository.TodoListRepository;
 import ua.nix.multiconfback.sockets.messages.WsMessage;
 import ua.nix.multiconfback.util.DtoMapper;
 
@@ -21,7 +21,7 @@ import static ua.nix.multiconfback.util.Constants.PRIVATE_LISTS_UPDATED_TOPIC;
 @RequiredArgsConstructor
 public class PullPrivateListsProcessor implements Processor {
 
-    private final TodoListService todoListService;
+    private final TodoListRepository todoListRepository;
     private final UserDetailsService userService;
     private final DtoMapper dtoMapper;
     private final Gson gson;
@@ -37,7 +37,7 @@ public class PullPrivateListsProcessor implements Processor {
         String userName = getUsername(exchange);
         User currentUser = (User) userService.loadUserByUsername(userName);
 
-        List<TodoList> updatedLists = todoListService.findAllByCreatedByAndIsPublicFalseOrderByCreatedDate(currentUser);
+        List<TodoList> updatedLists = todoListRepository.findAllByCreatedByAndIsPublicFalseOrderByCreatedDate(currentUser);
         return WsMessage.builder()
                 .topic(PRIVATE_LISTS_UPDATED_TOPIC)
                 .data(dtoMapper.convertDetailedTodoLists(updatedLists))

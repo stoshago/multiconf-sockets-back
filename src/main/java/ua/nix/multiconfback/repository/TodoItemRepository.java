@@ -1,11 +1,11 @@
-package ua.nix.multiconfback.service;
+package ua.nix.multiconfback.repository;
 
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ua.nix.multiconfback.model.TodoItem;
 
-@Service
+@Repository
 @Transactional
-public interface TodoItemService extends CrudRepository<TodoItem, String> {
+public interface TodoItemRepository extends CrudRepository<TodoItem, String> {
 }
