@@ -2,14 +2,12 @@ package ua.nix.multiconfback.repository;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import ua.nix.multiconfback.model.TodoList;
 import ua.nix.multiconfback.model.User;
 
 import java.util.List;
 
 @Repository
-@Transactional
 public interface TodoListRepository extends CrudRepository<TodoList, String> {
 
     List<TodoList> findAllByIsPublicTrueOrderByCreatedDate();

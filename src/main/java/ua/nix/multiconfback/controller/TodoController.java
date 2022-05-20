@@ -62,14 +62,12 @@ public class TodoController {
     }
 
     @GetMapping("/list/{listId}")
-    @Transactional
     public DetailedListDto getList(@PathVariable String listId) {
         TodoList list = findListSecured(listId);
         return dtoMapper.convertDetailedTodoList(list);
     }
 
     @DeleteMapping("/list/{listId}")
-    @Transactional
     public void deleteList(@PathVariable String listId) {
         TodoList list = findListSecured(listId);
         todoListRepository.delete(list);
