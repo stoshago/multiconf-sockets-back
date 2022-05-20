@@ -40,9 +40,7 @@ public class BrokerNotificationService {
     private final AuthService authService;
 
     public void notifyAll(WsMessage socketMessage) {
-        log.info(String.format(
-                "sending with convertAndSend() to topic <%s> and all users",
-                topic));
+        log.info("sending with convertAndSend() to topic <{}> and all users", topic);
         CamelContext camelContext = producerTemplate.getCamelContext();
         Exchange exchange = new ExchangeBuilder(camelContext)
                 .withBody(socketMessage)
@@ -51,10 +49,7 @@ public class BrokerNotificationService {
     }
 
     public void notifyUser(WsMessage socketMessage, String username) {
-        log.info(String.format(
-                "sending with convertAndSend() to topic <%s> and user <%s>",
-                topic,
-                username));
+        log.info("sending with convertAndSend() to topic <{}> and user <{}>", topic, username);
         CamelContext camelContext = producerTemplate.getCamelContext();
         Exchange exchange = new ExchangeBuilder(camelContext)
                 .withHeader(RECIPIENT_HEADER, username)
