@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import ua.nix.multiconfback.service.NotificationService;
 import ua.nix.multiconfback.sockets.messages.WsMessage;
 
+import java.util.Optional;
+
 import static ua.nix.multiconfback.util.Constants.RECIPIENT_HEADER;
 
 @Component
@@ -20,12 +22,12 @@ public class BrokerMessageProcessor implements Processor {
     @Override
     public void process(Exchange exchange) {
         WsMessage message = parseMessage(exchange);
-        String recipientUsername = (String) getHeader(exchange, RECIPIENT_HEADER);
-        if (recipientUsername == null) {
+        Optional<Object> recipientUsername = getHeader(exchange, RECIPIENT_HEADER);
+        if (recipientUsername.isEmpty()) {
             notificationService.notifyAll(message);
             return;
         }
-        notificationService.notifyUser(recipientUsername, message);
+        notificationService.notifyUser((String) recipientUsername.get(), message);
     }
 
     private WsMessage parseMessage(Exchange exchange) {
@@ -33,7 +35,7 @@ public class BrokerMessageProcessor implements Processor {
         return gson.fromJson(jsonBody, WsMessage.class);
     }
 
-    private Object getHeader(Exchange exchange, String headerName) {
-        return exchange.getIn().getHeader(headerName);
+    private Optional<Object> getHeader(Exchange exchange, String headerName) {
+        return Optional.ofNullable(exchange.getIn().getHeader(headerName));
     }
 }
