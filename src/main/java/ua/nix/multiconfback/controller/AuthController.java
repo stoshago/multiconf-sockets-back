@@ -1,5 +1,6 @@
 package ua.nix.multiconfback.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,6 +20,7 @@ import ua.nix.multiconfback.security.JwtService;
 import ua.nix.multiconfback.service.UserService;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class AuthController {
 
@@ -26,13 +28,6 @@ public class AuthController {
     private final UserService userService;
     private final PasswordEncoder encoder;
     private final JwtService jwtService;
-
-    public AuthController(AuthenticationManager authenticationManager, UserService userService, PasswordEncoder encoder, JwtService jwtService) {
-        this.authenticationManager = authenticationManager;
-        this.userService = userService;
-        this.encoder = encoder;
-        this.jwtService = jwtService;
-    }
 
     @PostMapping("/sign-in")
     public TokenResponse signIn(@RequestBody GetTokenRequest getTokenRequest) {

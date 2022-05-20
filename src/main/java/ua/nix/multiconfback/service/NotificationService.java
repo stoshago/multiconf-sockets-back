@@ -1,6 +1,7 @@
 package ua.nix.multiconfback.service;
 
 import com.google.gson.Gson;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
@@ -21,16 +22,12 @@ import static ua.nix.multiconfback.util.Constants.LIST_ADDED_TOPIC;
 import static ua.nix.multiconfback.util.Constants.LIST_DELETED_TOPIC;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class NotificationService {
 
     private final SocketSessionStorage sessionStorage;
     private final AuthService authService;
-
-    public NotificationService(SocketSessionStorage sessionStorage, AuthService authService) {
-        this.sessionStorage = sessionStorage;
-        this.authService = authService;
-    }
 
     public void notifyAll(WsMessage message) {
         sessionStorage.getSessionMap().forEach((key, value) -> value.forEach((session) -> {

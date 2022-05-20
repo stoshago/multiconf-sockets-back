@@ -1,5 +1,6 @@
 package ua.nix.multiconfback.sockets;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.springframework.http.server.ServerHttpRequest;
@@ -16,16 +17,13 @@ import java.util.stream.Collectors;
 
 import static ua.nix.multiconfback.util.Constants.AUTH_ATTRIBUTE;
 
+@RequiredArgsConstructor
 @Component
 public class TokenHandshakeInterceptor implements HandshakeInterceptor {
 
     private static final String TOKEN_KEY = "token";
 
     private final JwtService tokenService;
-
-    public TokenHandshakeInterceptor(JwtService tokenService) {
-        this.tokenService = tokenService;
-    }
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) {

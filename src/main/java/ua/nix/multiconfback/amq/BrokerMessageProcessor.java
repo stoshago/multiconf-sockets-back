@@ -1,7 +1,7 @@
 package ua.nix.multiconfback.amq;
 
 import com.google.gson.Gson;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
@@ -11,11 +11,10 @@ import ua.nix.multiconfback.sockets.messages.WsMessage;
 import static ua.nix.multiconfback.util.Constants.RECIPIENT_HEADER;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class BrokerMessageProcessor implements Processor {
 
     private final NotificationService notificationService;
-
 
     @Override
     public void process(Exchange exchange) {
