@@ -18,6 +18,7 @@ import ua.nix.multiconfback.api.response.TokenResponse;
 import ua.nix.multiconfback.model.User;
 import ua.nix.multiconfback.security.JwtService;
 import ua.nix.multiconfback.service.UserService;
+import ua.nix.multiconfback.util.DtoMapper;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,6 +29,7 @@ public class AuthController {
     private final UserService userService;
     private final PasswordEncoder encoder;
     private final JwtService jwtService;
+    private final DtoMapper dtoMapper;
 
     @PostMapping("/sign-in")
     public TokenResponse signIn(@RequestBody GetTokenRequest getTokenRequest) {
@@ -48,7 +50,7 @@ public class AuthController {
                     .body(new MessageResponse("Error: Username is already taken!"));
         }
 
-        User user = convertFromDto(request);
+        User user = dtoMapper.parseUser(request);
         userService.save(user);
 
         Authentication authUser = authorize(request.getUsername(), request.getPassword());
@@ -59,14 +61,6 @@ public class AuthController {
                         .displayName(user.getDisplayName())
                         .build()
         );
-    }
-
-    private User convertFromDto(SignupRequest request) {
-        User user = new User();
-        user.setLogin(request.getUsername());
-        user.setDisplayName(request.getDisplayName());
-        user.setPassword(encoder.encode(request.getPassword()));
-        return user;
     }
 
     private Authentication authorize(String username, String password) {

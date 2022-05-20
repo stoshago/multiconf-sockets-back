@@ -84,9 +84,7 @@ public class TodoController {
     ) {
         TodoList list = findListSecured(listId);
 
-        TodoItem item = new TodoItem();
-        item.setTitle(request.getTitle());
-        item.setDetails(request.getDetails());
+        TodoItem item = dtoMapper.parseTodoItem(request);
         item.setList(list);
         item = todoItemService.save(item);
 
