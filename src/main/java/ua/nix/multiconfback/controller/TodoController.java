@@ -24,7 +24,7 @@ import ua.nix.multiconfback.service.AuthService;
 import ua.nix.multiconfback.service.BrokerNotificationService;
 import ua.nix.multiconfback.service.TodoItemService;
 import ua.nix.multiconfback.service.TodoListService;
-import ua.nix.multiconfback.util.DtoConverter;
+import ua.nix.multiconfback.util.DtoMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,14 +38,15 @@ public class TodoController {
     private final TodoItemService todoItemService;
     private final AuthService authService;
     private final BrokerNotificationService notificationService;
+    private final DtoMapper dtoMapper;
 
     @GetMapping("/list/all")
     public AvailableListsResponse getAllLists() {
         List<TodoList> privateLists = todoListService.findAllByCreatedByAndIsPublicFalseOrderByCreatedDate(authService.getCurrentUser());
         List<TodoList> publicLists = todoListService.findAllByIsPublicTrueOrderByCreatedDate();
         return new AvailableListsResponse(
-                DtoConverter.convertTodoLists(privateLists),
-                DtoConverter.convertTodoLists(publicLists)
+                dtoMapper.convertTodoLists(privateLists),
+                dtoMapper.convertTodoLists(publicLists)
         );
     }
 
@@ -57,14 +58,14 @@ public class TodoController {
         list.setPublic(request.isPublic());
         list = todoListService.save(list);
 
-        notificationService.notifyListAdded(DtoConverter.convertTodoList(list), list.isPublic());
+        notificationService.notifyListAdded(dtoMapper.convertTodoList(list), list.isPublic());
     }
 
     @GetMapping("/list/{listId}")
     @Transactional
     public DetailedListDto getList(@PathVariable String listId) {
         TodoList list = findListSecured(listId);
-        return DtoConverter.convertDetailedTodoList(list);
+        return dtoMapper.convertDetailedTodoList(list);
     }
 
     @DeleteMapping("/list/{listId}")
@@ -89,7 +90,7 @@ public class TodoController {
         item.setList(list);
         item = todoItemService.save(item);
 
-        notificationService.notifyListItemAdded(DtoConverter.convertTodoItem(item), list.isPublic());
+        notificationService.notifyListItemAdded(dtoMapper.convertTodoItem(item), list.isPublic());
     }
 
     @PutMapping("/item/{itemId}/complete/{isCompleted}")
@@ -142,7 +143,7 @@ public class TodoController {
 
         // save new lists
         todoListService.saveAll(newLists);
-        List<DetailedListDto> response = DtoConverter.convertDetailedTodoLists(newLists);
+        List<DetailedListDto> response = dtoMapper.convertDetailedTodoLists(newLists);
 
         notificationService.notifyPrivateListsUpdated();
 

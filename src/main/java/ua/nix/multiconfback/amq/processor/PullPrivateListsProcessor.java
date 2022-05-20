@@ -10,7 +10,7 @@ import ua.nix.multiconfback.model.User;
 import ua.nix.multiconfback.service.TodoListService;
 import ua.nix.multiconfback.service.UserService;
 import ua.nix.multiconfback.sockets.messages.WsMessage;
-import ua.nix.multiconfback.util.DtoConverter;
+import ua.nix.multiconfback.util.DtoMapper;
 
 import java.util.List;
 import java.util.Map;
@@ -23,6 +23,7 @@ public class PullPrivateListsProcessor implements Processor {
 
     private final TodoListService todoListService;
     private final UserService userService;
+    private final DtoMapper dtoMapper;
 
     @Override
     public void process(Exchange exchange) {
@@ -38,7 +39,7 @@ public class PullPrivateListsProcessor implements Processor {
         List<TodoList> updatedLists = todoListService.findAllByCreatedByAndIsPublicFalseOrderByCreatedDate(currentUser);
         return WsMessage.builder()
                 .topic(PRIVATE_LISTS_UPDATED_TOPIC)
-                .data(DtoConverter.convertDetailedTodoLists(updatedLists))
+                .data(dtoMapper.convertDetailedTodoLists(updatedLists))
                 .build();
     }
 
