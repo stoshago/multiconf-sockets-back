@@ -10,7 +10,4 @@ public class PermissionDeniedException extends RuntimeException {
         super();
     }
 
-    public PermissionDeniedException(String msg) {
-        super(msg);
-    }
 }
