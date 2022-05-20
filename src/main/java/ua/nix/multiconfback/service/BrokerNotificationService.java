@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ua.nix.multiconfback.amq.processor.ProcessSpec;
 import ua.nix.multiconfback.amq.processor.PullPrivateListsProcessor;
-import ua.nix.multiconfback.api.model.DetailedListDto;
 import ua.nix.multiconfback.api.model.TodoItemDto;
 import ua.nix.multiconfback.api.model.TodoListDto;
 import ua.nix.multiconfback.sockets.messages.ItemCompletedBody;
@@ -18,7 +17,6 @@ import ua.nix.multiconfback.sockets.messages.ItemDeletedBody;
 import ua.nix.multiconfback.sockets.messages.ListDeletedBody;
 import ua.nix.multiconfback.sockets.messages.WsMessage;
 
-import java.util.List;
 import java.util.Map;
 
 import static ua.nix.multiconfback.util.Constants.AMQ_TOPIC_PREFIX;
