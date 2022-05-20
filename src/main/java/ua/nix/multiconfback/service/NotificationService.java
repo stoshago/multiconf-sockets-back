@@ -5,10 +5,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 import ua.nix.multiconfback.sockets.SocketSessionStorage;
 import ua.nix.multiconfback.sockets.messages.WsMessage;
 
 import java.io.IOException;
+import java.util.Collection;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -19,23 +21,21 @@ public class NotificationService {
     private final Gson gson;
 
     public void notifyAll(WsMessage message) {
-        sessionStorage.getSessionMap().forEach((key, value) -> value.forEach((session) -> {
-            try {
-                session.sendMessage(new TextMessage(gson.toJson(message)));
-            } catch (IOException e) {
-                log.error("Error occurred during message sending over WebSockets", e);
-            }
-        }));
+        sessionStorage.getSessionMap().values().stream()
+                .flatMap(Collection::stream)
+                .forEach(session -> notify(session, message));
     }
 
     public void notifyUser(String username, WsMessage message) {
-        sessionStorage.getUserSessions(username).forEach((session) -> {
-            try {
-                session.sendMessage(new TextMessage(gson.toJson(message)));
-            } catch (IOException e) {
-                log.error("Error occurred during message sending over WebSockets", e);
-            }
-        });
+        sessionStorage.getUserSessions(username).forEach(session -> notify(session, message));
+    }
+
+    private void notify(WebSocketSession session, WsMessage message) {
+        try {
+            session.sendMessage(new TextMessage(gson.toJson(message)));
+        } catch (IOException e) {
+            log.error("Error occurred during message sending over WebSockets", e);
+        }
     }
 
 }
