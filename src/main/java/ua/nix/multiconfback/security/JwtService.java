@@ -10,6 +10,7 @@ import ua.nix.multiconfback.model.User;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.Optional;
 
 import static ua.nix.multiconfback.util.Constants.AUTH_HEADER;
 import static ua.nix.multiconfback.util.Constants.TOKEN_HEADER_SUFFIX;
@@ -55,12 +56,12 @@ public class JwtService {
         return false;
     }
 
-    public String parseToken(HttpServletRequest request) {
+    public Optional<String> parseToken(HttpServletRequest request) {
         String headerAuth = request.getHeader(AUTH_HEADER);
         if (StringUtils.hasText(headerAuth) && headerAuth.startsWith(TOKEN_HEADER_SUFFIX)) {
-            return headerAuth.substring(TOKEN_HEADER_SUFFIX.length());
+            return Optional.of(headerAuth.substring(TOKEN_HEADER_SUFFIX.length()));
         }
-        return null;
+        return Optional.empty();
     }
 
 }
